@@ -54,44 +54,49 @@ const GlowingEffect = memo(
           }
 
           const center = [left + width * 0.5, top + height * 0.5];
-          const distanceFromCenter = Math.hypot(
-            mouseX - center[0],
-            mouseY - center[1]
-          );
-          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
 
-          if (distanceFromCenter < inactiveRadius) {
-            element.style.setProperty("--active", "0");
-            return;
+          if (center[0] !== undefined && center[1] !== undefined) {
+            const distanceFromCenter = Math.hypot(
+              mouseX - center[0],
+              mouseY - center[1]
+            );
+            const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
+
+            if (distanceFromCenter < inactiveRadius) {
+              element.style.setProperty("--active", "0");
+              return;
+            }
+
+            const isActive =
+              mouseX > left - proximity &&
+              mouseX < left + width + proximity &&
+              mouseY > top - proximity &&
+              mouseY < top + height + proximity;
+
+            element.style.setProperty("--active", isActive ? "1" : "0");
+
+            if (!isActive) return;
+
+            const currentAngle =
+              parseFloat(element.style.getPropertyValue("--start")) || 0;
+            let targetAngle =
+              (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
+              Math.PI +
+              90;
+
+            const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
+            const newAngle = currentAngle + angleDiff;
+
+            animate(currentAngle, newAngle, {
+              duration: movementDuration,
+              ease: [0.16, 1, 0.3, 1],
+              onUpdate: (value) => {
+                element.style.setProperty("--start", String(value));
+              },
+            });
+          } else {
+            console.error("Center is undefined");
           }
-
-          const isActive =
-            mouseX > left - proximity &&
-            mouseX < left + width + proximity &&
-            mouseY > top - proximity &&
-            mouseY < top + height + proximity;
-
-          element.style.setProperty("--active", isActive ? "1" : "0");
-
-          if (!isActive) return;
-
-          const currentAngle =
-            parseFloat(element.style.getPropertyValue("--start")) || 0;
-          let targetAngle =
-            (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
-            Math.PI +
-            90;
-
-          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
-          const newAngle = currentAngle + angleDiff;
-
-          animate(currentAngle, newAngle, {
-            duration: movementDuration,
-            ease: [0.16, 1, 0.3, 1],
-            onUpdate: (value) => {
-              element.style.setProperty("--start", String(value));
-            },
-          });
         });
       },
       [inactiveZone, proximity, movementDuration]
