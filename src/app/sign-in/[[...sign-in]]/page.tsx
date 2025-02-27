@@ -10,7 +10,7 @@ export default function Page() {
       </div>
 
       {/* Main content container */}
-      <div className="relative z-10 w-full max-w-2xl px-4">
+      <div className="relative z-10 w-full max-w-md px-4 text-center">
         {/* Logo and text section */}
         <div className="mb-8 text-center">
           <h1 className="bg-gradient-to-b from-neutral-200 to-neutral-600 bg-clip-text text-4xl font-bold text-transparent sm:text-5xl md:text-7xl">
@@ -22,7 +22,7 @@ export default function Page() {
         </div>
 
         {/* SignIn wrapper with custom styling */}
-        <div className="relative ml-28 mt-8 max-w-md">
+        <div className="relative mx-auto mt-8 max-w-md">
           <div className="backdrop-blur-sm">
             <SignIn
               appearance={{
