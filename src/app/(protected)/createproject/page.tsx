@@ -1,143 +1,18 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { GithubIcon, X, Loader2 } from "lucide-react"
-import useRefreshProjects from "@/hooks/useRefreshProjects"
+import CreateProjectComponent from "@/components/CreateProjectComponent"
 
-interface CreateProjectProps {
-  onProjectCreated: () => void
-}
-
-const CreateProject: React.FC<CreateProjectProps> = ({ onProjectCreated }) => {
+// This is the page component - it doesn't need the props that your original component used
+export default function CreateProjectPage() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [githubUrl, setGithubUrl] = useState("")
-  const [name, setName] = useState("")
-  const [githubToken, setGithubToken] = useState("")
-  const refreshProjects = useRefreshProjects();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    try {
-      const response = await fetch("/api/projects/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ githubUrl, name }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setGithubUrl("")
-        setName("")
-        setGithubToken("")
-
-        // Call refetch before navigation
-        await refreshProjects()
-
-        // Navigate to dashboard
-        router.push(`/dashboard?newProject=true`);
-        onProjectCreated(); // Call the onProjectCreated callback
-      }
-    } catch (error) {
-      console.error('Error creating project:', error)
-    } finally {
-      setIsLoading(false)
-    }
+  // This function will be passed to your CreateProjectComponent
+  const handleProjectCreated = () => {
+    // Any additional logic you want to run after project creation
   }
 
-  const handleClose = () => {
-    router.push('/dashboard'); // Redirect to dashboard on close
-  };
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <Card className="w-full max-w-md relative">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-2 top-2"
-          onClick={handleClose} // Use handleClose to redirect
-          disabled={isLoading}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Create New Project</CardTitle>
-          <CardDescription className="text-center">Enter your project details below</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Project Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="My Awesome Project"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="githubUrl">GitHub URL</Label>
-              <Input
-                id="githubUrl"
-                type="url"
-                placeholder="https://github.com/username/repo"
-                value={githubUrl}
-                onChange={(e) => setGithubUrl(e.target.value)}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="githubToken">GitHub Token (Optional)</Label>
-              <Input
-                id="githubToken"
-                type="password"
-                placeholder="Enter your GitHub token"
-                value={githubToken}
-                onChange={(e) => setGithubToken(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter>
-          <Button
-            className="w-full"
-            type="submit"
-            onClick={(e) => handleSubmit(e as any)}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating...
-              </>
-            ) : (
-              <>
-                <GithubIcon className="w-4 h-4 mr-2" />
-                Create Project
-              </>
-            )}
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+    <CreateProjectComponent onProjectCreated={handleProjectCreated} />
   )
 }
-
-export default CreateProject
