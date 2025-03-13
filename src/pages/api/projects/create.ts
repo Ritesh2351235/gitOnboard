@@ -8,7 +8,7 @@ const db = new PrismaClient();
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
+    return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 
   const { githubUrl, name } = req.body;
@@ -42,10 +42,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
   } catch (error) {
-    // Fix: Ensure error is properly serialized for logging
+    // Ensure error is properly serialized for logging
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error("Error creating project:", { error: errorMessage });
+    console.error("Error creating project:", error);
 
-    return res.status(500).json({ error: 'Failed to create project' });
+    return res.status(500).json({ error: 'Failed to create project', details: errorMessage });
   }
 }

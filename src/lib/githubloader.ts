@@ -265,7 +265,7 @@ export const indexGithubRepo = async (
     };
   } catch (error) {
     console.error(`Error indexing GitHub repo:`, error);
-    throw error;
+    throw new Error('Failed to index GitHub repository');
   }
 };
 

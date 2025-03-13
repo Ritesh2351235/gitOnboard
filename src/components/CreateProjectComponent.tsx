@@ -35,20 +35,16 @@ const CreateProjectComponent: React.FC<CreateProjectProps> = ({ onProjectCreated
         body: JSON.stringify({ githubUrl, name }),
       })
 
-      const data = await response.json()
-
-      if (response.ok) {
-        setGithubUrl("")
-        setName("")
-        setGithubToken("")
-
-        // Call refetch before navigation
-        await refreshProjects()
-
-        // Navigate to dashboard
-        router.push(`/dashboard?newProject=true`);
-        onProjectCreated(); // Call the onProjectCreated callback
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('Error creating project:', errorData.error)
+        // Handle the error (e.g., show a notification to the user)
+        return
       }
+
+      const data = await response.json()
+      console.log('Project created:', data)
+      onProjectCreated() // Call the callback function
     } catch (error) {
       console.error('Error creating project:', error)
     } finally {
